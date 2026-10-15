@@ -9,62 +9,126 @@ import random
 
 class TimeSheet:
     def __init__(self, algorithm):
-        # TODO: store the name; initialize a list of comparison counts.
-        pass
+        self.name = algorithm
+        self.count = []
+        self.comparisons = self.count
 
     def add_run(self, count):
-        # TODO: append a nonnegative integer comparison count.
-        raise NotImplementedError
+        self.count.append(count)
 
     def average(self):
-        # TODO: mean; return None if the list is empty.
-        raise NotImplementedError
+        return sum(self.count) / len(self.count) if self.count else None
 
     def median(self):
-        # TODO: middle of a sorted copy, average two middles if even.
-        # Return None if the list is empty.
-        raise NotImplementedError
+        if not self.count:
+            return None
+        ordered = sorted(self.count)
+        middle = len(ordered) // 2
+        if len(ordered) % 2:
+            return ordered[middle]
+        return (ordered[middle - 1] + ordered[middle]) / 2
 
     def standard_deviation(self):
-        # TODO: population standard deviation of the comparison counts.
-        # Return None if empty; use self.average() to calculate the mean.
-        # Do not use the statistics module.
-        raise NotImplementedError
+        if not self.count:
+            return None
+        mean = self.average()
+        variance = sum((value - mean) ** 2 for value in self.count) / len(self.count)
+        return variance ** 0.5
 
     def minimum(self):
-        # TODO: return smallest count or None if empty.
-        raise NotImplementedError
+        return min(self.count) if self.count else None
 
     def maximum(self):
-        # TODO: return largest count or None if empty.
-        raise NotImplementedError
+        return max(self.count) if self.count else None
 
 
 def bubble_sort(values):
-    # TODO if assigned: return (values, comparisons)
-    raise NotImplementedError
+    n = len(values) - 1
+    for i in range(n):
+        for j in range(n - i):
+            if values[j] > values[j+1]:
+                values[j], values[j+1] = values[j+1], values[j]
+
+
 
 
 def selection_sort(values):
     # TODO if assigned
-    raise NotImplementedError
+    myList = list(values)
+    comparisons = 0
+    if len(myList) == 0:
+        return None
+    else:
+        n = len(myList)-1
+        for i in range(n):
+            min_index = i
+            for j in range(i+1,n):
+                if myList[j] < myList[min_index]:
+                    min_index = j
+                    comparisons += 1
+            if min_index != i:
+                myList[i],myList[min_index] = myList[min_index],myList[i]
+    return myList, comparisons 
+
 
 
 def merge_sort(values):
-    # TODO if assigned (you may use temporary lists)
-    raise NotImplementedError
-
+    pass
 
 def quick_sort(values):
-    # TODO if assigned; use last-element pivot
-    raise NotImplementedError
+    comparisons = 0
+
+    def sort(items):
+        nonlocal comparisons
+        if len(items) <= 1:
+            return items
+
+        pivot = items[len(items) // 2]
+        lower, equal, higher = [], [], []
+        for item in items:
+            comparisons += 1
+            if item < pivot:
+                lower.append(item)
+            else:
+                comparisons += 1
+                if item > pivot:
+                    higher.append(item)
+                else:
+                    equal.append(item)
+
+        return sort(lower) + equal + sort(higher)
+
+    return sort(list(values)), comparisons
 
 
 def heap_sort(values):
-    # TODO if assigned; max heap
-    raise NotImplementedError
+    data = list(values)
+    comparisons = 0
 
+    def sift_down(root, end):
+        nonlocal comparisons
+        while 2 * root + 1 < end:
+            child = 2 * root + 1
+            right = child + 1
+            if right < end:
+                comparisons += 1
+                if data[right] > data[child]:
+                    child = right
+            comparisons += 1
+            if data[root] >= data[child]:
+                return
+            data[root], data[child] = data[child], data[root]
+            root = child
 
+    for root in range(len(data) // 2 - 1, -1, -1):
+        sift_down(root, len(data))
+    for end in range(len(data) - 1, 0, -1):
+        data[0], data[end] = data[end], data[0]
+        sift_down(0, end)
+
+    return data, comparisons
+
+    
 ALGORITHMS = {
     "Bubble": bubble_sort,
     "Selection": selection_sort,
@@ -76,8 +140,7 @@ ALGORITHMS = {
 
 def choose_algorithms(seed):
     """Use random.Random(seed).sample(...) for two DISTINCT names."""
-    # TODO
-    raise NotImplementedError
+    return random.Random(seed).sample(list(ALGORITHMS), 2)
 
 
 NUMBER_OF_RUNS = 50
